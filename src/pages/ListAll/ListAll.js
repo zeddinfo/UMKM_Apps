@@ -7,11 +7,29 @@ import { fonts } from '../../themes/fonts';
 import MapView, { Callout, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { customStyleMap } from '../../components/MapStyle';
 import { umkm_all } from '../../data/umkm_all';
+import ApiConfig from '../../helpers/ApiConfig';
+import Gap from '../../gap';
 const { width } = Dimensions.get('screen');
 
 const ListAll = () => {
 
     const [location, setLocation] = useState(null) // 👈
+    const [umkm, setUmkm] = useState([]);
+
+    const ListAllUmkm = async () => {
+        await ApiConfig.get('umkm')
+            .then((response) => {
+                const respon = response.data;
+                setUmkm(respon.data);
+            })
+            .catch((error) => {
+                console.log('error', error);
+            })
+    }
+
+    useEffect(() => {
+        ListAllUmkm();
+    }, [])
 
     const handleLocationPermission = async () => { // 👈
         let permissionCheck = '';
@@ -66,8 +84,9 @@ const ListAll = () => {
     }, []);
 
     const renderList = ({ item, index }) => {
+        console.log('item', item)
         return (
-            <CardList nama={item.nama} url={item.url} alamat={item.alamat} jarak={item.jarak} />
+            <CardList nama={item.nama} url={item.url} alamat={item.alamat} website={item.website} />
         )
     }
 
@@ -104,13 +123,13 @@ const ListAll = () => {
                         longitudeDelta: 0.0221,
                     }}
                 >
-                    {umkm_all.map((item, index) => {
+                    {umkm.map((item, index) => {
                         return (
-                            <View>
+                            <View key={index.toString()}>
                                 <Marker
                                     key={index.toString()} coordinate={{
-                                        latitude: item.lat,
-                                        longitude: item.long,
+                                        latitude: parseFloat(item.laltiude),
+                                        longitude: parseFloat(item.longitude),
                                     }}
                                 >
                                     <Callout key={index.toString()} tooltip>
@@ -161,10 +180,11 @@ const ListAll = () => {
                 />
                 <MapView /> */}
             </View> : <Text style={{ fontFamily: fonts.primary.bold, color: 'black' }}>Sedang memuat lokasi ...</Text>}
+            <Gap height={10} />
             <FlatList
-                data={umkm_all}
+                data={umkm}
                 renderItem={renderList}
-                keyExtractor={(item, index) => 'index-' + item.id.toString()}
+                keyExtractor={(item, index) => 'index-' + index.toString()}
                 ListEmptyComponent={ListEmptyComponent}
                 showsVerticalScrollIndicator={false}
             />

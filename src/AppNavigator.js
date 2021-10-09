@@ -4,6 +4,7 @@ import { Router, Scene } from 'react-native-router-flux'
 import { HomeScreen } from './pages/Home';
 import { ListAll } from './pages/ListAll';
 import { SplashScreen } from './pages/onBoot';
+import { DetailProduct } from './pages/Product';
 import { DetailToko } from './pages/Store';
 
 const stateHandler = (prevState, newsState, action) => {
@@ -38,7 +39,10 @@ const AppNavigator = () => {
                 <Scene
                     key="DetailToko"
                     component={DetailToko}
-
+                />
+                <Scene
+                    key="DetailProduct"
+                    component={DetailProduct}
                 />
             </Scene>
         </Router>

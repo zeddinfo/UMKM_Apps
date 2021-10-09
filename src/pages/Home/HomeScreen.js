@@ -1,7 +1,7 @@
 
 import React, { useRef, useEffect } from 'react'
 import { useState } from 'react'
-import { Dimensions, FlatList, StatusBar, StyleSheet, Text, View, BackHandler, PermissionsAndroid, TouchableOpacity } from 'react-native'
+import { Dimensions, FlatList, StatusBar, Image, StyleSheet, Text, View, BackHandler, PermissionsAndroid, TouchableOpacity } from 'react-native'
 import AwesomeAlert from 'react-native-awesome-alerts'
 import Carousel from 'react-native-snap-carousel'
 import { Slider } from '.'
@@ -15,6 +15,7 @@ import { fonts } from '../../themes/fonts'
 import Geolocation from 'react-native-geolocation-service';
 import { Actions } from 'react-native-router-flux'
 import Geocoder from 'react-native-geocoding';
+import ApiConfig from '../../helpers/ApiConfig'
 
 
 const { width, height } = Dimensions.get('window');
@@ -24,13 +25,45 @@ const HomeScreen = () => {
     const [semua, setSemua] = useState(1);
     const [showAlert, setShowAlert] = useState(false);
     const [ready, setReady] = useState(true);
-    const [alamat, setAlamat] = useState('');
-    Geocoder.init("AIzaSyCE3MdQAuEP3Mgub5EHYpMihHoNXVfpUNU");
+    const [listTerdekat, setListtTerdekat] = useState([]);
+    const [allUmkm, setUmkm] = useState([]);
+    // Geocoder.init("AIzaSyCVjf6zY-DeY9MPtgMv76JecMzmldqYLKo");
+
+    const UmkmTTerdekat = async () => {
+        const params = {
+            lat: global.latitude,
+            long: global.longitude,
+        }
+        await ApiConfig.post('umkm_terdekat', params)
+            .then((response) => {
+                const respon = response.data;
+                setListtTerdekat(respon.data);
+
+            })
+            .catch((error) => {
+                console.log('error', error);
+            });
+    }
+
+    const ListAllUmkm = async () => {
+        await ApiConfig.get('umkm')
+            .then((response) => {
+                const respon = response.data;
+                setUmkm(respon.data);
+            })
+            .catch((error) => {
+                console.log('error', error);
+            })
+    }
 
     const backAction = () => {
         setShowAlert(true);
     }
 
+    useEffect(() => {
+        UmkmTTerdekat();
+        ListAllUmkm();
+    }, [])
 
     const getLocation = async () => {
         setReady(false);
@@ -43,7 +76,7 @@ const HomeScreen = () => {
                 }
             )
             if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-                console.log("You can use the location")
+                // console.log("You can use the location")
                 Geolocation.getCurrentPosition(
                     (position) => {
                         console.log(position);
@@ -79,24 +112,24 @@ const HomeScreen = () => {
         return () => backHandler.remove();
     }, []);
 
-    useEffect(() => {
+    // useEffect(() => {
 
-        const geoLocation = async () => {
-            const result = await Geocoder.from(global.latitude, global.longitude)
-                .then(json => {
-                    var addressComponent = json.results[0].formatted_address;
-                    // console.log(addressComponent.split(',')[0]);
-                    setAlamat(addressComponent.split(',')[0]);
+    //     const geoLocation = async () => {
+    //         const result = await Geocoder.from(global.latitude, global.longitude)
+    //             .then(json => {
+    //                 var addressComponent = json.results[0].formatted_address;
+    //                 // console.log(addressComponent.split(',')[0]);
+    //                 setAlamat(addressComponent.split(',')[0]);
 
-                })
-                .catch(error => console.warn(error));
-        }
+    //             })
+    //             .catch(error => console.warn(error));
+    //     }
 
-        if (ready) {
-            geoLocation();
-        }
+    //     if (ready) {
+    //         // geoLocation();
+    //     }
 
-    }, [ready])
+    // }, [ready])
 
     useEffect(() => {
         getLocation();
@@ -108,25 +141,37 @@ const HomeScreen = () => {
         )
     }
 
-    const renderList = ({ item, index }) => {
+    const renderListSemua = ({ item, index }) => {
+        console.log('item semua', item);
         return (
-            <CardList nama={item.nama} url={item.url} alamat={item.alamat} jarak={item.jarak} items={item} onPress={() => Actions.DetailToko({ data: item })} />
+            <CardList nama={item.nama} url={item.url_file} website={item.website} alamat={item.alamat} jarak={item.jarak} items={item} onPress={() => Actions.DetailToko({ data: item })} />
+        )
+    }
+
+    const renderList = ({ item, index }) => {
+        console.log('item', item);
+        return (
+            <CardList nama={item.nama} url={item.url_file} alamat={item.alamat} jarak={item.jarak} items={item} onPress={() => Actions.DetailToko({ data: item })} />
         )
     }
 
     const ListEmptyComponent = () => {
         return (
-            <Text>Tidak ada data</Text>
+            <View style={styles.emptyCompnent}>
+                <Image source={require('../../assets/images/not-found.png')} style={styles.imageNotFound} />
+                <Text style={styles.text}>Oops, Sepertinya data tidak ditemukan</Text>
+            </View>
         )
     }
 
     const onSelectSwitch = (value) => {
         setSemua(value)
+        console.log('value', value);
     }
     return (
         <View style={styles.page}>
             <StatusBar backgroundColor="white" barStyle="dark-content" />
-            <HeaderHome alamat={alamat} />
+            <HeaderHome />
             <Gap height={5} />
             <View style={styles.searchBar}>
                 <SearchBar placeholder="Silahkan cari sesuatu" />
@@ -134,7 +179,7 @@ const HomeScreen = () => {
             <Gap height={10} />
             <View style={styles.produkFavorit}>
                 <Text style={{ fontFamily: fonts.primary.bold }}>
-                    Produk Terfavorit
+                    Pemetaan UMKM
                 </Text>
                 <TouchableOpacity onPress={() => Actions.ListAll()}>
                     <Text style={{ fontFamily: fonts.primary.bold, color: '#0aada8' }}>
@@ -172,14 +217,20 @@ const HomeScreen = () => {
             </View>
             <Gap height={15} />
             {/* <View style={styles.listData}> */}
-
-            <FlatList
-                data={semua == 1 ? umkm_terdekat : umkm_all}
+            {semua == 1 ? <FlatList
+                data={listTerdekat}
                 renderItem={renderList}
-                keyExtractor={(item, index) => 'index-' + item.id.toString()}
+                keyExtractor={(item, index) => 'index-' + index.toString()}
                 ListEmptyComponent={ListEmptyComponent}
                 showsVerticalScrollIndicator={false}
-            />
+            /> : <FlatList
+                data={allUmkm}
+                renderItem={renderListSemua}
+                keyExtractor={(item, index) => 'index-' + index.toString()}
+                ListEmptyComponent={ListEmptyComponent}
+                showsVerticalScrollIndicator={false}
+            />}
+
             {/* </View> */}
 
             <AwesomeAlert
@@ -238,4 +289,19 @@ const styles = StyleSheet.create({
     umkm: {
         paddingHorizontal: 10,
     },
+    imageNotFound: {
+        width: 200,
+        height: 200,
+        resizeMode: 'contain',
+        marginTop: width / 7
+    },
+    emptyCompnent: {
+        justifyContent: 'center',
+        alignContent: 'center',
+        alignItems: 'center',
+    },
+    text: {
+        fontFamily: fonts.primary.bold,
+        fontSize: 15
+    }
 })

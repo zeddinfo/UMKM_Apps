@@ -9,9 +9,9 @@ const HeaderHome = ({ alamat }) => {
     return (
         <View style={styles.container}>
             <View style={{ flexDirection: 'row' }}>
-                <Icons name="map-marker-alt" size={14} color="#0aada8" />
-                <Gap width={5} />
-                <Text style={styles.text}>{alamat}</Text>
+                {/* <Icons name="map-marker-alt" size={14} color="#0aada8" /> */}
+                {/* <Gap width={5} /> */}
+                <Text style={styles.text}>UMKM Apps</Text>
             </View>
             <Image source={require('../assets/images/avatar.png')} style={styles.avatar} />
         </View>

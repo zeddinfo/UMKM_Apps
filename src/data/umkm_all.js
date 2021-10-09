@@ -43,5 +43,14 @@ export const umkm_all = [
         url: "https://images.unsplash.com/photo-1591675641425-7bc95986ec72?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=870&q=80",
         lat: -6.982861,
         long: 110.406908
+    },
+    {
+        id: 6,
+        nama: "Warna Agung Batik Kendal",
+        alamat: "Jl Tentara Pelajar no 100 Rembang",
+        jarak: "Sekitar 2 Km dari lokasi Anda",
+        url: "https://images.unsplash.com/photo-1591675641425-7bc95986ec72?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=870&q=80",
+        lat: -6.982861,
+        long: 110.406908
     }
 ]

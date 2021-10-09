@@ -6,7 +6,7 @@ import Icons from 'react-native-vector-icons/AntDesign';
 import F5Icons from 'react-native-vector-icons/FontAwesome5';
 import Enctype from 'react-native-vector-icons/Entypo';
 
-const CardList = ({ nama, alamat, jarak, url, items, onPress }) => {
+const CardList = ({ nama, alamat, jarak, url, items, onPress, website }) => {
     return (
         <TouchableOpacity style={styles.container} onPress={onPress}>
             <Image source={{ uri: url }} style={styles.image} />
@@ -20,7 +20,7 @@ const CardList = ({ nama, alamat, jarak, url, items, onPress }) => {
                 <View style={{ flexDirection: 'row', alignContents: 'center', alignItems: 'center' }}>
                     <F5Icons name="location-arrow" color="red" />
                     <Gap width={5} />
-                    <Text style={styles.jarak}>{jarak}</Text>
+                    <Text style={styles.jarak}>{website ? website : `Sekitar ${jarak} Km dari lokasi anda`}</Text>
                 </View>
                 <View style={{ flexDirection: 'row', alignContents: 'center', alignItems: 'center' }}>
                     <Enctype name="address" color="grey" />
@@ -32,6 +32,8 @@ const CardList = ({ nama, alamat, jarak, url, items, onPress }) => {
             <View style={styles.detail}>
                 <Icons name="right" color="white" size={20} />
             </View>
+
+
         </TouchableOpacity>
     )
 }
@@ -77,7 +79,7 @@ const styles = StyleSheet.create({
     jarak: {
         fontFamily: fonts.primary.normal,
         color: 'red',
-
+        maxWidth: 170,
     },
     detail: {
         backgroundColor: '#0aada8',
@@ -86,6 +88,8 @@ const styles = StyleSheet.create({
         alignContent: 'center',
         alignItems: 'center',
         justifyContent: 'center',
-        borderRadius: 25 / 2
-    }
+        borderRadius: 25 / 2,
+        position: 'absolute',
+        right: 20,
+    },
 })

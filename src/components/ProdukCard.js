@@ -1,5 +1,5 @@
 import React from 'react'
-import { Image, StyleSheet, Text, View } from 'react-native'
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import Icons from 'react-native-vector-icons/AntDesign';
 import F5Icons from 'react-native-vector-icons/FontAwesome5';
 import Enctype from 'react-native-vector-icons/Entypo';
@@ -7,9 +7,9 @@ import Gap from '../gap';
 import { fonts } from '../themes/fonts';
 import NumberFormat from 'react-number-format';
 
-const ProdukCard = ({ nama, stok, harga, item, url }) => {
+const ProdukCard = ({ nama, stok, harga, item, url, onPress }) => {
     return (
-        <View style={styles.container}>
+        <TouchableOpacity style={styles.container} onPress={onPress}>
             <Image source={{ uri: url }} style={styles.image} />
             <Gap width={20} />
             <View style={{ width: 200 }}>
@@ -41,7 +41,7 @@ const ProdukCard = ({ nama, stok, harga, item, url }) => {
             <View style={styles.detail}>
                 <Icons name="right" color="white" size={20} />
             </View>
-        </View>
+        </TouchableOpacity>
     )
 }
 
@@ -101,6 +101,8 @@ const styles = StyleSheet.create({
         alignContent: 'center',
         alignItems: 'center',
         justifyContent: 'center',
-        borderRadius: 25 / 2
+        borderRadius: 25 / 2,
+        position: 'absolute',
+        right: 20,
     }
 })
