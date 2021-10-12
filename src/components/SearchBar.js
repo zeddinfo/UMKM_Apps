@@ -3,7 +3,7 @@ import { StyleSheet, Text, TextInput, View } from 'react-native'
 import Icons from 'react-native-vector-icons/FontAwesome5'
 import Gap from '../gap';
 
-const SearchBar = ({ placeholder }) => {
+const SearchBar = ({ placeholder, value, onChange }) => {
 
     const [border, setBorder] = useState('#e1e1e1');
     const onFocusForm = () => {
@@ -18,7 +18,7 @@ const SearchBar = ({ placeholder }) => {
         <View style={styles.container(border)}>
             <Icons name="search" color={border} size={20} />
             <Gap width={2} />
-            <TextInput placeholder={placeholder} onFocus={onFocusForm} onBlur={onBlurForm} />
+            <TextInput placeholder={placeholder} onFocus={onFocusForm} value={value} onChangeText={onChange} onBlur={onBlurForm} />
         </View>
     )
 }

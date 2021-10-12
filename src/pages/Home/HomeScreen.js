@@ -27,6 +27,9 @@ const HomeScreen = () => {
     const [ready, setReady] = useState(true);
     const [listTerdekat, setListtTerdekat] = useState([]);
     const [allUmkm, setUmkm] = useState([]);
+    const [listTerdekatFiltered, setLisTerdekatFiltered] = useState([]);
+    const [listAllFiltered, setListAllFiltered] = useState([]);
+    const [keyword, setKeyword] = useState('');
     // Geocoder.init("AIzaSyCVjf6zY-DeY9MPtgMv76JecMzmldqYLKo");
 
     const UmkmTTerdekat = async () => {
@@ -38,6 +41,7 @@ const HomeScreen = () => {
             .then((response) => {
                 const respon = response.data;
                 setListtTerdekat(respon.data);
+                setListAllFiltered(respon.data);
 
             })
             .catch((error) => {
@@ -50,6 +54,7 @@ const HomeScreen = () => {
             .then((response) => {
                 const respon = response.data;
                 setUmkm(respon.data);
+                setListAllFiltered(respon.data);
             })
             .catch((error) => {
                 console.log('error', error);
@@ -61,7 +66,9 @@ const HomeScreen = () => {
     }
 
     useEffect(() => {
-        UmkmTTerdekat();
+        if (ready) {
+            UmkmTTerdekat();
+        }
         ListAllUmkm();
     }, [])
 
@@ -88,7 +95,7 @@ const HomeScreen = () => {
                     (error) => {
                         // See error code charts below.
                         console.log(error.code, error.message);
-                        setReady(true);
+                        setReady(false);
 
                     },
                     { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000, forceRequestLocation: true, showLocationDialog: true }
@@ -168,13 +175,41 @@ const HomeScreen = () => {
         setSemua(value)
         console.log('value', value);
     }
+
+    const cariData = (text) => {
+        console.log('text', text);
+        if (text) {
+            if (semua == 1) {
+                const newData = listTerdekat.filter((item) => {
+                    const itemUmkm = item.nama ? item.nama.toUpperCase() : ''.toUpperCase();
+                    const textUmkm = text.toUpperCase();
+                    return itemUmkm.indexOf(textUmkm) > -1;
+                });
+                setLisTerdekatFiltered(newData);
+                setKeyword(text);
+            } else {
+                const newData = allUmkm.filter((item) => {
+                    const itemUmkm = item.nama ? item.nama.toUpperCase() : ''.toUpperCase();
+                    const textUmkm = text.toUpperCase();
+                    return itemUmkm.indexOf(textUmkm) > -1;
+                });
+                setListAllFiltered(newData)
+                setKeyword(text);
+            }
+        } else {
+            setLisTerdekatFiltered(listTerdekat);
+            setListAllFiltered(allUmkm);
+            setKeyword(text);
+        }
+    }
+
     return (
         <View style={styles.page}>
             <StatusBar backgroundColor="white" barStyle="dark-content" />
             <HeaderHome />
             <Gap height={5} />
             <View style={styles.searchBar}>
-                <SearchBar placeholder="Silahkan cari sesuatu" />
+                <SearchBar placeholder="Silahkan cari sesuatu" value={keyword} onChange={(value) => cariData(value)} />
             </View>
             <Gap height={10} />
             <View style={styles.produkFavorit}>
@@ -218,13 +253,13 @@ const HomeScreen = () => {
             <Gap height={15} />
             {/* <View style={styles.listData}> */}
             {semua == 1 ? <FlatList
-                data={listTerdekat}
+                data={listTerdekatFiltered}
                 renderItem={renderList}
                 keyExtractor={(item, index) => 'index-' + index.toString()}
                 ListEmptyComponent={ListEmptyComponent}
                 showsVerticalScrollIndicator={false}
             /> : <FlatList
-                data={allUmkm}
+                data={listAllFiltered}
                 renderItem={renderListSemua}
                 keyExtractor={(item, index) => 'index-' + index.toString()}
                 ListEmptyComponent={ListEmptyComponent}

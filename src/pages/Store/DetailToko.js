@@ -14,6 +14,8 @@ const { width } = Dimensions.get('screen');
 const DetailToko = (props) => {
     const { data } = props;
     const [toko, setToko] = useState(null);
+    const [keyword, setKeyword] = useState('');
+    const [productFilterd, setProductFiltered] = useState([]);
     const id = data.id_umkm;
 
     const getDetailToko = async () => {
@@ -22,11 +24,29 @@ const DetailToko = (props) => {
                 const respon = response.data;
                 console.log('respon', respon)
                 setToko(respon.data);
+                setProductFiltered(respon.data.products);
                 console.log('toko is', toko.alamat);
             })
             .catch((error) => {
                 console.log('error', error);
             })
+    }
+
+    const cariData = (text) => {
+        console.log('text', text);
+        if (text) {
+            const newData = toko.products.filter((item) => {
+                const itemUmkm = item.nama_product ? item.nama_product.toUpperCase() : ''.toUpperCase();
+                const textUmkm = text.toUpperCase();
+                return itemUmkm.indexOf(textUmkm) > -1;
+            });
+            setProductFiltered(newData);
+            setKeyword(text);
+
+        } else {
+            setProductFiltered(toko.products);
+            setKeyword(text);
+        }
     }
 
     useEffect(() => {
@@ -70,11 +90,11 @@ const DetailToko = (props) => {
             </View>
             <Gap height={20} />
             <View style={styles.listProduk}>
-                <SearchBar placeholder="Silahkan cari produk" />
+                <SearchBar placeholder="Silahkan cari produk" value={keyword} onChange={(value) => cariData(value)} />
             </View>
             <Gap height={20} />
             {toko != null ? <FlatList
-                data={toko.products}
+                data={productFilterd}
                 renderItem={renderList}
                 keyExtractor={(item, index) => 'index-' + index.toString()}
                 ListEmptyComponent={ListEmptyComponent}

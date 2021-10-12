@@ -9,6 +9,7 @@ import { customStyleMap } from '../../components/MapStyle';
 import { umkm_all } from '../../data/umkm_all';
 import ApiConfig from '../../helpers/ApiConfig';
 import Gap from '../../gap';
+import { Actions } from 'react-native-router-flux';
 const { width } = Dimensions.get('screen');
 
 const ListAll = () => {
@@ -84,15 +85,18 @@ const ListAll = () => {
     }, []);
 
     const renderList = ({ item, index }) => {
-        console.log('item', item)
+
         return (
-            <CardList nama={item.nama} url={item.url} alamat={item.alamat} website={item.website} />
+            <CardList nama={item.nama} url={item.url_file} alamat={item.alamat} website={item.website} onPress={() => Actions.DetailToko({ data: item })} />
         )
     }
 
     const ListEmptyComponent = () => {
         return (
-            <Text>Tidak ada data</Text>
+            <View style={styles.emptyCompnent}>
+                <Image source={require('../../assets/images/not-found.png')} style={styles.imageNotFound} />
+                <Text style={styles.text}>Oops, Sepertinya data tidak ditemukan</Text>
+            </View>
         )
     }
 
@@ -239,5 +243,20 @@ const styles = StyleSheet.create({
     },
     text: {
         fontFamily: fonts.primary.bold
+    },
+    imageNotFound: {
+        width: 200,
+        height: 200,
+        resizeMode: 'contain',
+        marginTop: width / 7
+    },
+    emptyCompnent: {
+        justifyContent: 'center',
+        alignContent: 'center',
+        alignItems: 'center',
+    },
+    text: {
+        fontFamily: fonts.primary.bold,
+        fontSize: 15
     }
 })
